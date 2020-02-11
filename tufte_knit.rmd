@@ -1,0 +1,116 @@
+---
+title: "Tufte Handout of Rmarkdown"
+author: "Faryal Usman"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html: default
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+link-citations: yes
+subtitle: An implementation in R Markdown
+bibliography: /Users/faru/Desktop/Tufte-implementation-of-Markdown/mybib2.bib
+---
+
+
+# Initial setup 
+```{r setup, include = TRUE, warning=FALSE, echo = TRUE, message=FALSE} 
+# Knitr options include:
+  # include = TRUE
+  # warning = FALSE
+  # echo = TRUE
+  # message = FALSE 
+knitr::opts_chunk$set(echo = TRUE)
+knitr::read_chunk("/Users/faru/Desktop/Tufte-implementation-of-Markdown/external_file_chunk.r")
+source("/Users/faru/Desktop/Tufte-implementation-of-Markdown/external_file_chunk.r")
+```
+
+
+# Loading relevant libraries 
+```{r, warning = FALSE, echo = FALSE, message = FALSE, include = TRUE, echo = TRUE}
+library(tufte)
+library(tidyverse)
+library(ggplot2)
+library(bookdown)
+```
+
+# A plot of starwars data 
+```{r, starwars-plot, fig.cap = 'A ggplot of starwars data', warning = FALSE}
+starwars %>% 
+  filter(species == "Human") %>% 
+ggplot() +
+  aes(x = eye_color, 
+      y = height, color = eye_color) +
+  geom_point() + ggtitle("Heights of humans by eye color in the Star Wars universe") + 
+  theme(plot.title = element_text(size = 8, face = "bold"))
+```
+
+
+
+
+
+# A table of star wars data 
+```{r, starwars-table}
+starwars %>% 
+  filter(species == "Human")  %>% 
+  select(name, 
+         height, 
+         eye_color) %>% 
+  knitr::kable(caption = "A knitr kable table of starwars humans eye color ")
+```
+
+
+# Code from an external source 
+```{r, code-from-external-source}
+# Finding the cube of some number through an external chunk 
+y <- cube_function(5)
+y
+
+# Finding the square of some number through an external chunk 
+x <- square_function(3)
+x
+```
+
+
+
+
+# Cached code 
+```{r time-consuming-function, cache = TRUE}
+
+exponential_func <- function(reps) {
+  result_list <- c(rep(NA,reps))
+  for (i in 1:reps){
+    if (i %% 2 == 0) {
+      result_list[i] <- square_function(i)
+    } else {
+      result_list[i] <- cube_function(i)
+    }
+  }
+  q <- max(result_list)
+}
+```
+
+
+
+
+
+```{r eval-time-of-cached-function, dependson="time-consuming-function"}
+start.time <- Sys.time()
+first <- exponential_func(1e4)
+first
+end.time <- Sys.time()
+time_taken = end.time - start.time 
+time_taken
+```
+
+
+
+# Citations
+In @xie2017dynamic, a book written by one of the authors of knitr, the author explores the applications of R to scientific discpline such as epidemiology, finance, biology and the social sciences as well as the variety of models that can be used.
+
+In @xie2013knitr, the same author explores some of the more technical functionalities of knitr.
